@@ -14,12 +14,15 @@ import {
   AlertTriangle,
   X,
   ChevronDown,
+  Menu,
 } from 'lucide-react';
 import { useCampus } from '../hooks/useCampusData';
+import { useUIState } from '../hooks/useUIState';
 import { useNavigate } from 'react-router-dom';
 
 const TopBar: React.FC = () => {
   const { data, resetDemoData } = useCampus();
+  const { toggleMobileMenu } = useUIState();
   const navigate = useNavigate();
 
   const [searchOpen, setSearchOpen] = useState(false);
@@ -120,34 +123,42 @@ const TopBar: React.FC = () => {
 
   return (
     <>
-      <header className="h-16 px-6 glass-panel border-b border-white/[0.08] flex items-center justify-between sticky top-0 z-30">
-        {/* Left: Greeting & Date */}
-        <div className="flex items-center gap-4">
+      <header className="h-16 px-4 sm:px-6 glass-panel border-b border-white/[0.08] flex items-center justify-between sticky top-0 z-30 shrink-0">
+        {/* Left: Mobile Hamburger & Greeting */}
+        <div className="flex items-center gap-3">
+          {/* Mobile Drawer Trigger */}
+          <button
+            onClick={toggleMobileMenu}
+            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] md:hidden transition-colors"
+            title="Open menu"
+          >
+            <Menu size={20} />
+          </button>
+
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-slate-400 font-medium">
+              <span className="text-xs sm:text-sm text-slate-400 font-medium">
                 {getGreeting()},
               </span>
-              <span className="text-sm font-semibold text-white">
+              <span className="text-xs sm:text-sm font-semibold text-white">
                 {data.profile.name.split(' ')[0]}
               </span>
-              <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+              <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
                 {data.profile.branch.includes('COE') ? 'TIET COE' : data.profile.branch} • Sem {data.profile.semester.replace(/\D/g, '') || '5'}
               </span>
             </div>
-            <p className="text-xs text-slate-500">
+            <p className="text-[11px] sm:text-xs text-slate-500">
               {currentTime.toLocaleDateString('en-US', {
-                weekday: 'long',
+                weekday: 'short',
                 month: 'short',
                 day: 'numeric',
-                year: 'numeric',
               })}
             </p>
           </div>
         </div>
 
         {/* Center: Global Search Bar */}
-        <div className="flex-1 max-w-md mx-6 hidden md:block">
+        <div className="flex-1 max-w-md mx-4 hidden md:block">
           <button
             onClick={() => setSearchOpen(true)}
             className="w-full flex items-center justify-between px-3.5 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] transition-all text-xs text-slate-400 group"
@@ -163,7 +174,7 @@ const TopBar: React.FC = () => {
         </div>
 
         {/* Right: Actions (Search Mobile, Notifications, Theme, Profile) */}
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-1.5 sm:gap-2.5">
           {/* Mobile Search Trigger */}
           <button
             onClick={() => setSearchOpen(true)}
@@ -257,12 +268,12 @@ const TopBar: React.FC = () => {
                 setProfileOpen(!profileOpen);
                 setNotificationsOpen(false);
               }}
-              className="flex items-center gap-2 p-1.5 pl-2.5 rounded-lg hover:bg-white/[0.06] transition-colors border border-transparent hover:border-white/[0.08]"
+              className="flex items-center gap-1.5 sm:gap-2 p-1.5 pl-2 rounded-lg hover:bg-white/[0.06] transition-colors border border-transparent hover:border-white/[0.08]"
             >
               <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-xs font-bold text-white shadow-sm">
                 {data.profile.name.charAt(0)}
               </div>
-              <ChevronDown size={14} className="text-slate-400" />
+              <ChevronDown size={14} className="text-slate-400 hidden sm:block" />
             </button>
 
             {profileOpen && (
@@ -331,7 +342,7 @@ const TopBar: React.FC = () => {
 
       {/* Global Search Modal (Ctrl+K) */}
       {searchOpen && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-150">
+        <div className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-20 px-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-150">
           <div className="w-full max-w-2xl rounded-2xl bg-[#12131c] border border-white/[0.12] shadow-2xl overflow-hidden">
             {/* Input Header */}
             <div className="p-4 border-b border-white/[0.08] flex items-center gap-3">
@@ -481,4 +492,3 @@ const TopBar: React.FC = () => {
 };
 
 export default TopBar;
-

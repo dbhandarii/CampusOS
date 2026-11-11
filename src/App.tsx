@@ -20,6 +20,7 @@ import Productivity from './pages/Productivity';
 import Settings from './pages/Settings';
 import Onboarding from './components/Onboarding';
 import { CampusProvider } from './hooks/useCampusData';
+import { UIProvider } from './hooks/useUIState';
 
 const AppContent: React.FC = () => {
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -69,9 +70,11 @@ const AppContent: React.FC = () => {
 const App: React.FC = () => {
   return (
     <CampusProvider>
-      <Router>
-        <AppContent />
-      </Router>
+      <UIProvider>
+        <Router>
+          <AppContent />
+        </Router>
+      </UIProvider>
     </CampusProvider>
   );
 };
