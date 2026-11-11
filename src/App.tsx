@@ -21,52 +21,59 @@ import Settings from './pages/Settings';
 import Onboarding from './components/Onboarding';
 import { CampusProvider } from './hooks/useCampusData';
 
-const App: React.FC = () => {
+const AppContent: React.FC = () => {
   const [showOnboarding, setShowOnboarding] = useState(false);
 
-  // Determine if profile exists
   useEffect(() => {
-    const data = localStorage.getItem('campusOSData');
-    if (data) {
-      const parsed = JSON.parse(data);
-      if (!parsed.profile?.name) {
-        setShowOnboarding(true);
-      }
-    } else {
+    const hasSeenOnboarding = localStorage.getItem('campusOS_onboarding_completed');
+    if (!hasSeenOnboarding) {
+      // First visit: show onboarding
       setShowOnboarding(true);
     }
   }, []);
 
+  const handleFinishOnboarding = () => {
+    localStorage.setItem('campusOS_onboarding_completed', 'true');
+    setShowOnboarding(false);
+  };
+
+  return (
+    <div className="flex h-screen w-screen bg-[#0a0a0f] text-slate-100 overflow-hidden font-sans antialiased">
+      <Sidebar />
+      <div className="flex flex-col flex-1 h-full min-w-0 overflow-hidden">
+        <TopBar />
+        <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto">
+          <Routes>
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/academics" element={<Academics />} />
+            <Route path="/academics/timetable" element={<Timetable />} />
+            <Route path="/academics/attendance" element={<Attendance />} />
+            <Route path="/academics/assignments" element={<Assignments />} />
+            <Route path="/academics/exams" element={<Exams />} />
+            <Route path="/campus-life" element={<CampusLife />} />
+            <Route path="/library" element={<LibraryResources />} />
+            <Route path="/quick-links" element={<QuickLinks />} />
+            <Route path="/productivity" element={<Productivity />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          </Routes>
+        </main>
+      </div>
+
+      {showOnboarding && <Onboarding onClose={handleFinishOnboarding} />}
+    </div>
+  );
+};
+
+const App: React.FC = () => {
   return (
     <CampusProvider>
       <Router>
-        <div className="flex h-full bg-background text-white">
-          <Sidebar />
-          <div className="flex flex-col flex-1 overflow-auto">
-            <TopBar />
-            <main className="p-4 overflow-auto">
-              <Routes>
-                <Route path="/" element={<Navigate to="/dashboard" replace />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/academics" element={<Academics />} />
-                <Route path="/academics/timetable" element={<Timetable />} />
-                <Route path="/academics/attendance" element={<Attendance />} />
-                <Route path="/academics/assignments" element={<Assignments />} />
-                <Route path="/academics/exams" element={<Exams />} />
-                <Route path="/campus-life" element={<CampusLife />} />
-                <Route path="/library" element={<LibraryResources />} />
-                <Route path="/quick-links" element={<QuickLinks />} />
-                <Route path="/productivity" element={<Productivity />} />
-                <Route path="/settings" element={<Settings />} />
-              </Routes>
-            </main>
-          </div>
-        </div>
-        {showOnboarding && <Onboarding onClose={() => setShowOnboarding(false)} />}
+        <AppContent />
       </Router>
     </CampusProvider>
   );
 };
 
 export default App;
-
